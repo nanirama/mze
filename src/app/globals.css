@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+ font-family: "Inter", sans-serif;
+}
+
+
+h1,h2,h3,h4,h4,h6 {
+  font-family: "Inter", sans-serif;
+}
+
+.homeslider .slick-dots {
+   display: grid !important;
+    bottom: inherit;
+    top: 50px;
+    left: 48px;
+    right: inherit;
+    text-align: left;
+}
+.homeslider .slick-dots .slick-dots li {display: flex; flex-direction: column;}
+.homeslider .slick-dots li button:before {width: 12px; height: 12px; background-color: #a0aec0; color: transparent; border-radius: 50%; opacity: 1;}
+.homeslider .slick-dots li.slick-active button:before {background-color: #667eea; color: transparent !important;}@media screen and (max-width:767px) {
+  .homeslider .slick-dots { left: 30px;}
+}
+@media screen and (max-width: 639px) {
+  .homeslider .slick-dots {display: none !important;}
+}

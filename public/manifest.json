@@ -1,0 +1,15 @@
+{
+  "name": "Mze.ge",
+  "short_name": "საინფორმაციო ცენტრი",
+  "description": "ახალი ამბები, ბიზნეს სესხები, დაზღვევა, ბიზნეს მისამართები",
+  "lang": "ka",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

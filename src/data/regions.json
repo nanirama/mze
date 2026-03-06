@@ -1,0 +1,21 @@
+[
+    { "name": "თბილისი", "category": "თბილისი", "slug": "tbilisi" },
+    { "name": "ბათუმი", "category": "ბათუმი", "slug": "batumi" },
+    { "name": "ქუთაისი", "category": "ქუთაისი", "slug": "kutaisi" },
+    { "name": "ზუგდიდი", "category": "ზუგდიდი", "slug": "zugdidi" },
+    { "name": "მცხეთა", "category": "მცხეთა", "slug": "mtskheta" },
+    { "name": "თელავი", "category": "თელავი", "slug": "telavi" },
+    { "name": "რუსთავი", "category": "რუსთავი", "slug": "rustavi" },
+    { "name": "ფოთი", "category": "ფოთი", "slug": "poti" },
+    { "name": "ოზურგეთი", "category": "ოზურგეთი", "slug": "ozurgeti" },
+    { "name": "მესტია", "category": "მესტია", "slug": "mestia" },
+    { "name": "წყალტუბო", "category": "წყალტუბო", "slug": "tskaltubo" },
+    { "name": "სამტრედია", "category": "სამტრედია", "slug": "samtredia" },
+    { "name": "ქობულეთი", "category": "ქობულეთი", "slug": "kobuleti" },
+    { "name": "ზესტაფონი", "category": "zestafoni", "slug": "zestafoni" },
+    { "name": "გურჯაანი", "category": "გურჯაანი", "slug": "gurjaani" },
+    { "name": "ახალციხე", "category": "ახალციხე", "slug": "akhaltsikhe" },
+    { "name": "გორი", "category": "გორი", "slug": "gori" },
+    { "name": "გარდაბანი", "category": "გარდაბანი", "slug": "gardabani" },
+    { "name": "ხაშური", "category": "ხაშური", "slug": "khashuri" }
+  ]

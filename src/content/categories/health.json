@@ -1,0 +1,7 @@
+{
+  "name": "ჯანმრთელობა",
+  "icon": "beauty.svg",
+  "color": "#bee3f8",
+  "description": "ინფორმაცია ჯანმრთელობის შესახებ",
+  "slug": "health"
+}
