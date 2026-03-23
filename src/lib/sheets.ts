@@ -11,6 +11,13 @@ let postsCache: Post[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
 
+// Allows external revalidation endpoints to bust the in-memory cache immediately.
+// This complements Next.js tagged cache invalidation.
+export function clearPostsCache() {
+  postsCache = null;
+  cacheTimestamp = 0;
+}
+
 function getAuthClient() {
   return new google.auth.GoogleAuth({
     credentials: {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import { getCategoryBySlug, getAllCategorySlugs } from '@/lib/categories';
-import { getPostsByCategory } from '@/lib/posts';
+import { getPostsByCategory, getPostImagePath, isLogoFallback } from '@/lib/posts';
 import { generateSeoMetadata } from '@/components/common/Seo';
 
 interface CategoryPageProps {
@@ -106,24 +106,28 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 {posts.map((post) => (
                   <Link
                     key={post.slug}
-                    href={`/posts/${post.slug}`}
+                    href={`/${post.slug}`}
                     className="group block w-[30%] bg-white rounded-lg p-2 overflow-hidden shadow-[1px_1px_5px_0_rgba(1,1,1,0.05)] 
 transition-all duration-[250ms] ease-in-out 
 hover:-translate-y-1 
 hover:shadow-[0px_2px_4px_rgba(46,41,51,0.08),0px_5px_10px_rgba(71,63,79,0.16)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                   >
                     {/* Thumbnail */}
-                    {post.thumbnail && (
-                      <div className="relative w-full h-[290px] bg-gray-200 overflow-hidden">
-                        <Image
-                          src={`/assets/images/posts/${post.thumbnail}`}
-                          alt={post.title}
-                          fill
-                          className="object-cover  transition-transform duration-200 rounded-lg"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      </div>
-                    )}
+                    {post.thumbnail && (() => {
+                      const imagePath = getPostImagePath(post, post.thumbnail);
+                      const isLogo = isLogoFallback(imagePath);
+                      return (
+                        <div className="relative w-full h-[290px] bg-gray-200 overflow-hidden">
+                          <Image
+                            src={imagePath}
+                            alt={post.title}
+                            fill
+                            className={isLogo ? "object-contain transition-transform duration-200 rounded-lg" : "object-cover transition-transform duration-200 rounded-lg"}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                        </div>
+                      );
+                    })()}
 
                     {/* Content */}
                     <div className="p-6">

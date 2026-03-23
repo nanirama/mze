@@ -1,88 +1,94 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPostBySlug } from "@/lib/sheets";
-import DabuduSection from "@/components/common/DabuduSection";
+import { cacheLife, cacheTag } from "next/cache";
+import { Suspense } from "react";
+import { generateSeoMetadata } from '@/components/common/Seo';
+import { siteConfig } from '@/config/site';
+import SlugPostPageContent from "@/components/shared/SlugPostPageContent";
+import MarkdownPostPageContent from "@/components/shared/MarkdownPostPageContent";
+import { getPostBySlug as getSheetPostBySlug } from "@/lib/sheets";
+import { getPostBySlug as getMarkdownPostBySlug, getPostImagePath } from "@/lib/posts";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// Make this route fully dynamic to avoid hitting Google Sheets during build
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+async function getPostBySlugTagged(slug: string) {
+  // Next.js tagged cache: "use cache" enables caching for this async server function.
+  // cacheTag() lets us selectively invalidate per-slug via revalidateTag().
+  "use cache";
+  cacheTag(`post:${slug}`);
+  cacheLife({ expire: 300 }); // keep up to ~5 minutes (matches the in-memory TTL in sheets.ts)
+  return getSheetPostBySlug(slug);
+}
+
+async function getMarkdownPostBySlugTagged(slug: string) {
+  "use cache";
+  cacheTag(`post:${slug}`);
+  cacheLife({ expire: 300 });
+  return getMarkdownPostBySlug(slug);
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const mdPost = await getMarkdownPostBySlugTagged(slug);
 
-  if (!post) return {};
+  if (mdPost) {
+    const image = mdPost.thumbnail ? getPostImagePath(mdPost, mdPost.thumbnail) : undefined;
+    return generateSeoMetadata({
+      title: mdPost.title,
+      description: mdPost.excerpt || `${mdPost.title} - ${siteConfig.description}`,
+      keywords: mdPost.keywords || [mdPost.category],
+      url: `/${mdPost.slug}`,
+      image,
+      type: "article",
+      publishedTime: mdPost.date,
+      author: mdPost.author,
+      siteName: siteConfig.name,
+      siteUrl: siteConfig.siteUrl,
+    });
+  }
 
-  return {
+  const post = await getPostBySlugTagged(slug);
+
+  if (!post) {
+    return {
+      title: 'პოსტი ვერ მოიძებნა',
+    };
+  }
+
+  return generateSeoMetadata({
     title: post.title,
-    description: post.description ?? "",
-    alternates: {
-      canonical: `/${post.slug}`,
-    },
-  };
+    description: post.description || `${post.title} - ${siteConfig.description}`,
+    keywords: ['ბიზნეს ინფორმაცია', 'ბიზნეს მისამართები'],
+    url: `/${post.slug}`,
+    image: '/assets/images/logo.png',
+    type: 'article',
+    siteName: siteConfig.name,
+    siteUrl: siteConfig.siteUrl,
+  });
 }
 
-export default async function PostPage({ params }: Props) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+export default function PostPage({ params }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <PostPageInner params={params} />
+    </Suspense>
+  );
+}
 
+async function PostPageInner({ params }: { params: Props["params"] }) {
+  const { slug } = await params;
+  const mdPost = await getMarkdownPostBySlugTagged(slug);
+  if (mdPost) {
+    return <MarkdownPostPageContent post={mdPost} />;
+  }
+
+  const post = await getPostBySlugTagged(slug);
   if (!post) notFound();
 
   // filters comes from Google Sheets as a comma-separated string, e.g. "avto, foti"
   const region = post.filters ? post.filters.split(",")[1]?.trim() : "";
 
-  return (
-    <div className="bg-[#f8f8f8] y-16 sm:py-20 lg:py-24">
-    <main className="mx-auto max-w-7xl px-4">
-        <h1 className="text-[3rem] text-[#2d3748] font-bold">{post.title}</h1>
-          {region && (
-            <p className="mt-4 text-gray-600">
-              ქალაქი <strong>{region}</strong>
-            </p>
-          )}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
-        {/* Main content - 8 columns on large screens */}
-        <article className="lg:col-span-8">
-          <div className="bg-white rounded-lg shadow-[1px_1px_5px_0_rgba(1,1,1,0.05)] hover:shadow-md transition-shadow  px-6 py-8 my-4">
-            {post.description && (
-              <div className="space-y-1">
-                <div className="text-base text-[#718096]">{post.description}</div>
-              </div>
-            )}
-          </div>
-          <div className="bg-white rounded-lg shadow-[1px_1px_5px_0_rgba(1,1,1,0.05)] hover:shadow-md transition-shadow  px-6 py-8 my-4">
-            {post.city && (
-              <div
-                className="prose max-w-none text-base text-[#718096]"
-                dangerouslySetInnerHTML={{ __html: post.city }}
-              />
-            )}
-          </div>
-          <div className="bg-white rounded-lg shadow-[1px_1px_5px_0_rgba(1,1,1,0.05)] hover:shadow-md transition-shadow  px-6 py-8 my-4">
-            {post.state && (
-              <div className="space-y-1">
-                <div className="text-base text-[#718096]">{post.state}</div>
-              </div>
-            )}
-          </div>
-          <div className="bg-white rounded-lg shadow-[1px_1px_5px_0_rgba(1,1,1,0.05)] hover:shadow-md transition-shadow  px-6 py-8 my-4">
-            {post.federal && (
-              <div
-              className="prose max-w-none text-base text-[#718096]"
-              dangerouslySetInnerHTML={{ __html: post.federal }}
-            />
-            )}
-          </div>
-        </article>
-
-        {/* Sidebar - 4 columns on large screens */}
-       <DabuduSection />
-      </div>
-    </main>
-    </div>
-  );
+  return <SlugPostPageContent post={post} region={region} />;
 }

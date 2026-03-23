@@ -8,6 +8,7 @@ export interface Post {
   date: string;
   author: string;
   category: string;
+  categoryFolder?: string; // The folder name of the category (e.g., 'autos', 'education')
   thumbnail?: string;
   keywords?: string[];
   content: string;
@@ -18,37 +19,51 @@ const postsDirectory = path.join(process.cwd(), 'src', 'content', 'posts');
 
 /**
  * Get all posts from markdown files
+ * Reads posts from posts/category-name/post-slug structure
  */
 export function getAllPosts(): Post[] {
   try {
-    const folders = fs.readdirSync(postsDirectory, { withFileTypes: true })
+    const posts: Post[] = [];
+
+    // Get all category folders in posts directory
+    const categoryFolders = fs.readdirSync(postsDirectory, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
       .map(dirent => dirent.name);
 
-    const posts: Post[] = [];
+    // Iterate through each category folder
+    for (const categoryFolder of categoryFolders) {
+      const categoryPath = path.join(postsDirectory, categoryFolder);
+      
+      // Get all post folders within the category folder
+      const postFolders = fs.readdirSync(categoryPath, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
 
-    for (const folderName of folders) {
-      const folderPath = path.join(postsDirectory, folderName);
-      const indexPath = path.join(folderPath, 'index.mdx');
+      // Iterate through each post folder
+      for (const postFolder of postFolders) {
+        const postPath = path.join(categoryPath, postFolder);
+        const indexPath = path.join(postPath, 'index.mdx');
 
-      if (fs.existsSync(indexPath)) {
-        const fileContents = fs.readFileSync(indexPath, 'utf8');
-        const { data, content } = matter(fileContents);
+        if (fs.existsSync(indexPath)) {
+          const fileContents = fs.readFileSync(indexPath, 'utf8');
+          const { data, content } = matter(fileContents);
 
-        // Create slug from folder name
-        const slug = folderName;
+          // Create slug from post folder name
+          const slug = postFolder;
 
-        posts.push({
-          slug,
-          title: data.title || '',
-          date: data.date || '',
-          author: data.author || '',
-          category: data.category || '',
-          thumbnail: data.thumbnail || undefined,
-          keywords: data.keywords || [],
-          content,
-          excerpt: content.substring(0, 200).replace(/\n/g, ' ').trim() + '...',
-        });
+          posts.push({
+            slug,
+            title: data.title || '',
+            date: data.date || '',
+            author: data.author || '',
+            category: data.category || categoryFolder,
+            categoryFolder,
+            thumbnail: data.thumbnail || undefined,
+            keywords: data.keywords || [],
+            content,
+            excerpt: content.substring(0, 200).replace(/\n/g, ' ').trim() + '...',
+          });
+        }
       }
     }
 
@@ -77,8 +92,91 @@ export function getPostsByCategory(categoryName: string, categorySlug: string): 
 
 /**
  * Get a single post by slug
+ * Searches through all categories to find the post
  */
 export function getPostBySlug(slug: string): Post | null {
-  const allPosts = getAllPosts();
-  return allPosts.find(post => post.slug === slug) || null;
+  try {
+    // Get all category folders in posts directory
+    const categoryFolders = fs.readdirSync(postsDirectory, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    // Search through each category folder for the post
+    for (const categoryFolder of categoryFolders) {
+      const categoryPath = path.join(postsDirectory, categoryFolder);
+      const postPath = path.join(categoryPath, slug);
+      const indexPath = path.join(postPath, 'index.mdx');
+
+      if (fs.existsSync(indexPath)) {
+        const fileContents = fs.readFileSync(indexPath, 'utf8');
+        const { data, content } = matter(fileContents);
+
+        return {
+          slug,
+          title: data.title || '',
+          date: data.date || '',
+          author: data.author || '',
+          category: data.category || categoryFolder,
+          categoryFolder,
+          thumbnail: data.thumbnail || undefined,
+          keywords: data.keywords || [],
+          content,
+          excerpt: content.substring(0, 200).replace(/\n/g, ' ').trim() + '...',
+        };
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error reading post:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if an image exists in the post's folder
+ */
+export function postImageExists(post: Post, imageName: string): boolean {
+  if (!post.categoryFolder) {
+    return false;
+  }
+  
+  try {
+    const imagePath = path.join(
+      postsDirectory,
+      post.categoryFolder,
+      post.slug,
+      imageName
+    );
+    return fs.existsSync(imagePath);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get the image path for a post image
+ * Returns the API route path to serve images from the post's folder
+ * Falls back to logo if image doesn't exist
+ */
+export function getPostImagePath(post: Post, imageName: string): string {
+  if (!post.categoryFolder) {
+    // Fallback to old path if categoryFolder is not set
+    return `/assets/images/posts/${imageName}`;
+  }
+  
+  // Check if image exists in post folder
+  if (postImageExists(post, imageName)) {
+    return `/api/post-image/${post.categoryFolder}/${post.slug}/${imageName}`;
+  }
+  
+  // Fallback to logo if image doesn't exist
+  return `/assets/images/logo.png`;
+}
+
+/**
+ * Check if the given image path is the logo fallback
+ */
+export function isLogoFallback(imagePath: string): boolean {
+  return imagePath === '/assets/images/logo.png';
 }

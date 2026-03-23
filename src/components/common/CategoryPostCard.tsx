@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Post } from '@/lib/posts';
+import { getPostImagePath, isLogoFallback } from '@/lib/posts';
 
 interface BaseProps {
   post: Post;
@@ -39,7 +40,7 @@ export function CategoryPostCardFull({
 }) {
   return (
     <Link
-      href={`/posts/${post.slug}`}
+      href={`/${post.slug}`}
       className={`
         group
         block bg-white 
@@ -51,17 +52,21 @@ export function CategoryPostCardFull({
       `.trim()}
     >
       {/* Thumbnail */}
-      {post.thumbnail && (
-        <div className={`relative w-full ${imageHeight} bg-gray-200 overflow-hidden`}>
-          <Image
-            src={`/assets/images/posts/${post.thumbnail}`}
-            alt={post.title}
-            fill
-            className="object-cover  transition-transform duration-200 rounded-lg"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        </div>
-      )}
+      {post.thumbnail && (() => {
+        const imagePath = getPostImagePath(post, post.thumbnail);
+        const isLogo = isLogoFallback(imagePath);
+        return (
+          <div className={`relative w-full ${imageHeight} bg-gray-200 overflow-hidden`}>
+            <Image
+              src={imagePath}
+              alt={post.title}
+              fill
+              className={isLogo ? "object-contain transition-transform duration-200 rounded-lg" : "object-cover transition-transform duration-200 rounded-lg"}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
+        );
+      })()}
 
       {/* Content */}
       <div className="p-4 sm:p-6">
@@ -131,7 +136,7 @@ export function CategoryPostCardCompact({
 }) {
   return (
     <Link
-      href={`/posts/${post.slug}`}
+      href={`/${post.slug}`}
       className={`
         group
         block bg-white rounded-lg

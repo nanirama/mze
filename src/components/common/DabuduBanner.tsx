@@ -41,7 +41,7 @@ export default function DabuduBanner() {
                 mb-3 sm:mb-4
                 leading-tight
               ">
-                Dabudu.com - ინგლისური ენის შესწავლა და დასაქმება ინგლისურენოვან თანამშრომლად
+                Dabudu.com - ინგლისური ენის შესწავლა და დასაქმება
               </h2>
               <p className="
                 text-base sm:text-lg

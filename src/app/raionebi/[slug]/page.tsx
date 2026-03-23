@@ -5,6 +5,9 @@ import sectors from "@/data/sectors.json";
 import { getPostsByCategory, getPostsBySector } from "@/lib/sheets";
 import SectorFilter from "@/components/common/SectorFilter";
 import PostsDataCard from "@/components/common/PostsDataCard";
+import { generateSeoMetadata } from '@/components/common/Seo';
+import { siteConfig } from '@/config/site';
+import { Suspense } from "react";
 
 interface Region {
   name: string;
@@ -19,17 +22,6 @@ interface PageProps {
 
 const allRegions = regions as Region[];
 
-// Force dynamic rendering to handle search params changes
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-export async function generateStaticParams() {
-  // slugs in JSON may include a leading "/", strip it for route params
-  return allRegions.map((region) => ({
-    slug: region.slug.replace(/^\//, ""),
-  }));
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const region = allRegions.find((r) => r.slug === slug);
@@ -40,13 +32,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  return {
+  return generateSeoMetadata({
     title: `${region.name} — ბიზნეს ინფო`,
     description: `${region.name} რაიონის ბიზნეს მისამართები და ინფორმაცია.`,
-  };
+    keywords: [region.name, 'ბიზნეს მისამართები', 'რაიონები', 'ბიზნეს ინფორმაცია'],
+    url: `/raionebi/${slug}`,
+    type: 'website',
+    siteName: siteConfig.name,
+    siteUrl: siteConfig.siteUrl,
+  });
 }
 
-export default async function RegionPage({ params, searchParams }: PageProps) {
+export default function RegionPage({ params, searchParams }: PageProps) {
+  return (
+    <Suspense fallback={null}>
+      <RegionPageInner params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function RegionPageInner({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const { sector } = await searchParams;
   const region = allRegions.find((r) => r.slug === slug);

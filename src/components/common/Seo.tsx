@@ -22,15 +22,15 @@ interface SeoProps {
  * For client-side SEO tags, use this component.
  */
 export default function Seo({
-  title,
-  description,
-  keywords = [],
-  url,
-  image,
-  type = 'website',
-  publishedTime,
-  modifiedTime,
-  author,
+  title: _title,
+  description: _description,
+  keywords: _keywords = [],
+  url: _url,
+  image: _image,
+  type: _type = 'website',
+  publishedTime: _publishedTime,
+  modifiedTime: _modifiedTime,
+  author: _author,
 }: SeoProps) {
   // In Next.js App Router, we use metadata API instead
   // This component is kept for reference and potential client-side use
@@ -56,7 +56,22 @@ export function generateSeoMetadata({
 }: SeoProps & { siteName: string; siteUrl: string }): Metadata {
   const fullTitle = `${title} | ${siteName}`;
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
-  const imageUrl = image ? (image.startsWith('http') ? image : `${siteUrl}${image}`) : undefined;
+  
+  // Ensure image URL is absolute
+  let imageUrl: string | undefined = undefined;
+  if (image) {
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      // Already absolute URL
+      imageUrl = image;
+    } else {
+      // Relative URL - make it absolute
+      // Ensure image path starts with /
+      const cleanImagePath = image.startsWith('/') ? image : `/${image}`;
+      // Ensure siteUrl doesn't end with / to avoid double slashes
+      const cleanSiteUrl = siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
+      imageUrl = `${cleanSiteUrl}${cleanImagePath}`;
+    }
+  }
 
   return {
     title: fullTitle,
@@ -79,6 +94,7 @@ export function generateSeoMetadata({
             alt: title,
             width: 1200,
             height: 630,
+            type: 'image/jpeg',
           },
         ],
       }),
@@ -93,7 +109,12 @@ export function generateSeoMetadata({
       title: fullTitle,
       description,
       ...(imageUrl && {
-        images: [imageUrl],
+        images: [
+          {
+            url: imageUrl,
+            alt: title,
+          },
+        ],
       }),
     },
     robots: {

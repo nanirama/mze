@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   
   // Output configuration
   output: 'standalone',
+
+  // Enable support for `"use cache"` directives (tagged cache + revalidateTag).
+  cacheComponents: true,
   
   // Image optimization
   images: {

@@ -61,7 +61,7 @@ export default function NewsCategory() {
               self-start sm:self-auto
             "
           >
-            See more
+            მეტის ნახვა
           </Link>
         </div>
 

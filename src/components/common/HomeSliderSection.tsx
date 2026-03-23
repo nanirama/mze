@@ -51,8 +51,8 @@ const HomeSliderSection = () => {
                                 />
                                 <div className="absolute inset-0 z-10 bg-[linear-gradient(120deg,_rgba(45,55,72,0.9)_0%,_rgba(45,55,72,0.4)_50%,_transparent_100%)]"></div>
                                 <div className="absolute inset-0 z-20 flex items-center md:px-24 px-8">
-                                    <Link href="#" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
-                                        Sport as prevention
+                                    <Link href="https://mze.ge/sporti-rogorc-prevencia/" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
+                                        სპორტი, როგორც პრევენცია
                                     </Link>
                                 </div>
                             </div>
@@ -66,8 +66,8 @@ const HomeSliderSection = () => {
                                 />
                                 <div className="absolute inset-0 z-10 bg-[linear-gradient(120deg,_rgba(45,55,72,0.9)_0%,_rgba(45,55,72,0.4)_50%,_transparent_100%)]"></div>
                                 <div className="absolute inset-0 z-20 flex items-center md:px-24 px-8">
-                                    <Link href="#" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
-                                        How to limit sugar in your diet
+                                    <Link href="https://www.mze.ge/limit-sugar/" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
+                                        როგორ შევზღუდოთ შაქარი რაციონში
                                     </Link>
                                 </div>
                             </div>
@@ -81,8 +81,8 @@ const HomeSliderSection = () => {
                                 />
                                 <div className="absolute inset-0 z-10 bg-[linear-gradient(120deg,_rgba(45,55,72,0.9)_0%,_rgba(45,55,72,0.4)_50%,_transparent_100%)]"></div>
                                 <div className="absolute inset-0 z-20 flex items-center md:px-24 px-8">
-                                    <Link href="#" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
-                                        Cold shower or just lukewarm?
+                                    <Link href="https://mze.ge/civi-sxapi/" className="text-white md:text-4xl text-2xl hover:text-amber-500 font-bold">
+                                        ცივი შხაპი თუ უბრალოდ ნელთბილი?
                                     </Link>
                                 </div>
                             </div>

@@ -4,6 +4,8 @@ import { siteConfig } from "@/config/site";
 import sectors from "@/data/sectors.json";
 import { getPostsBySectorSlug } from "@/lib/sheets";
 import PostsDataCard from "@/components/common/PostsDataCard";
+import { generateSeoMetadata } from '@/components/common/Seo';
+import { Suspense } from "react";
 
 interface Sector {
   category: string;
@@ -17,16 +19,6 @@ interface PageProps {
 
 const allSectors = sectors as Sector[];
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-export async function generateStaticParams() {
-  return allSectors.map((sector) => ({
-    slug: sector.slug,
-  }));
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const sector = allSectors.find((s) => s.slug === slug);
@@ -37,41 +29,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  return {
+  return generateSeoMetadata({
     title: `${sector.category} — ბიზნეს ინფო`,
     description: `${sector.category} სექტორის ბიზნეს მისამართები და ინფორმაცია.`,
     keywords: [sector.category, 'ბიზნეს მისამართები', 'სექტორები', 'ბიზნეს ინფორმაცია'],
-    alternates: {
-      canonical: `${siteConfig.siteUrl}/seqtorebi/${sector.slug}`,
-    },
-    openGraph: {
-      title: `${sector.category} — ბიზნეს ინფო`,
-      description: `${sector.category} სექტორის ბიზნეს მისამართები და ინფორმაცია.`,
-      url: `${siteConfig.siteUrl}/seqtorebi/${sector.slug}`,
-      type: 'website',
-      locale: 'ka_GE',
-      siteName: siteConfig.name,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${sector.category} — ბიზნეს ინფო`,
-      description: `${sector.category} სექტორის ბიზნეს მისამართები და ინფორმაცია.`,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  };
+    url: `/seqtorebi/${sector.slug}`,
+    type: 'website',
+    siteName: siteConfig.name,
+    siteUrl: siteConfig.siteUrl,
+  });
 }
 
-export default async function SectorPage({ params }: PageProps) {
+export default function SectorPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={null}>
+      <SectorPageInner params={params} />
+    </Suspense>
+  );
+}
+
+async function SectorPageInner({ params }: PageProps) {
   const { slug } = await params;
   const sector = allSectors.find((s) => s.slug === slug);
 

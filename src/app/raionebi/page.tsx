@@ -2,39 +2,17 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import Link from 'next/link';
 import regions from '@/data/regions.json';
+import { generateSeoMetadata } from '@/components/common/Seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateSeoMetadata({
   title: 'ბიზნეს ინფო ქალაქების მიხედვით',
   description: 'იპოვეთ ბიზნეს მისამართები ქალაქების მიხედვით',
   keywords: ['ბიზნეს მისამართები', 'ქალაქები', 'რაიონები', 'ბიზნეს ინფორმაცია', 'საქართველო'],
-  alternates: {
-    canonical: `${siteConfig.siteUrl}/raionebi`,
-  },
-  openGraph: {
-    title: 'ბიზნეს ინფო ქალაქების მიხედვით',
-    description: 'იპოვეთ ბიზნეს მისამართები ქალაქების მიხედვით',
-    url: `${siteConfig.siteUrl}/raionebi`,
-    type: 'website',
-    locale: 'ka_GE',
-    siteName: siteConfig.name,
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ბიზნეს ინფო ქალაქების მიხედვით',
-    description: 'იპოვეთ ბიზნეს მისამართები ქალაქების მიხედვით',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-};
+  url: '/raionebi',
+  type: 'website',
+  siteName: siteConfig.name,
+  siteUrl: siteConfig.siteUrl,
+});
 
 interface District {
   name: string;

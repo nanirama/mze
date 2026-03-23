@@ -2,39 +2,17 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import Link from 'next/link';
 import sectors from '@/data/sectors.json';
+import { generateSeoMetadata } from '@/components/common/Seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateSeoMetadata({
   title: 'ბიზნეს ინფო სექტორების მიხედვით',
   description: 'იპოვეთ ბიზნეს მისამართები სექტორების მიხედვით',
   keywords: ['ბიზნეს მისამართები', 'სექტორები', 'ბიზნეს ინფორმაცია', 'საქართველო'],
-  alternates: {
-    canonical: `${siteConfig.siteUrl}/seqtorebi`,
-  },
-  openGraph: {
-    title: 'ბიზნეს ინფო სექტორების მიხედვით',
-    description: 'იპოვეთ ბიზნეს მისამართები სექტორების მიხედვით',
-    url: `${siteConfig.siteUrl}/seqtorebi`,
-    type: 'website',
-    locale: 'ka_GE',
-    siteName: siteConfig.name,
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ბიზნეს ინფო სექტორების მიხედვით',
-    description: 'იპოვეთ ბიზნეს მისამართები სექტორების მიხედვით',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-};
+  url: '/seqtorebi',
+  type: 'website',
+  siteName: siteConfig.name,
+  siteUrl: siteConfig.siteUrl,
+});
 
 interface Sector {
   category: string;

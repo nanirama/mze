@@ -60,7 +60,7 @@ export default function RestaurantsCategory() {
               self-start sm:self-auto
             "
           >
-            See more
+            მეტის ნახვა
           </Link>
         </div>
 

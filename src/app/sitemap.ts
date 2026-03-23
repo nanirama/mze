@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Post routes
   const allPosts = getAllPosts();
   const postRoutes = allPosts.map((post) => ({
-    url: `${baseUrl}/posts/${post.slug}`,
+    url: `${baseUrl}/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
